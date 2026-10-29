@@ -6,9 +6,31 @@
 
 using namespace std;
 
+
+// Complejidad temporal: O(n^3) por los tres ciclos anidados de Floyd-Warshall
+// (la impresión es O(n^2), así que domina O(n^3)).
+void floyd(vector<vector<int>> D) {
+    int n = D.size();
+    for(int k = 0; k < n; k++)           
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < n; j++)
+                D[i][j] = min(D[i][j], D[i][k] + D[k][j]);
+
+    cout << "Punto 1" << endl;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if(i != j){
+                cout << "Colonia " << i + 1 << " a " << "colonia " << j + 1 << ": " << D[i][j] << endl;
+            }
+        }
+        cout << endl << endl;
+    }
+
+}
+
 int main(int argc, char* argv[]) {
     // Archivo de entrada: se puede pasar como argumento, si no se usa el de ejemplo
-    string nombreArchivo = (argc > 1) ? argv[1] : "Entradas/E5_Entrada_1.txt";
+    string nombreArchivo = (argc > 1) ? argv[1] : "Entradas/E5_Entrada_2.txt";
 
     ifstream archivo(nombreArchivo);
     if (!archivo.is_open()) {
@@ -49,35 +71,7 @@ int main(int argc, char* argv[]) {
 
     archivo.close();
 
-
-    //
-    // AL FINAL BORREN ESTO. 
-    //
-    // Mostrar lo leído para verificar
-    cout << "N = " << n << endl;
-
-    cout << "\nDistancias:" << endl;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << distancias[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << "\nCapacidades:" << endl;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << capacidades[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    cout << "\nCentrales:" << endl;
-    for (int i = 0; i < n; i++) {
-        cout << "(" << centrales[i].first << "," << centrales[i].second << ")" << endl;
-    }
-
-    cout << "\nNueva central: (" << nuevaCentral.first << "," << nuevaCentral.second << ")" << endl;
+    floyd(distancias);
 
     return 0;
 }
