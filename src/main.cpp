@@ -97,6 +97,67 @@ void resolverTSP(const vector<vector<int>>& distancias) {
 
 // ===== Fin Sección Punto 2 =======
 
+// ====== Sección Punto 3: Flujo máximo (Ford-Fulkerson con bfs / Edmonds-Karp) =======
+
+//Funcion para buscar el camino que esta aumenntando
+//usando aristas con capacidad residual cf(u,v) > 0
+//Se guarda en el camino de padre y regresa si existe
+
+void resolverFlujoMaximo(vector<vector<int>> residual) {
+    int n = residual.size();
+    int origen = 0; //colonia inicial
+    int destino = n - 1; //colonia final
+    int flujoTotal = 0;
+
+    //Condicion: que exista un camino de aumento en el grafo residual
+    while (n > 1) {
+        //Buscar con BFS el camino mas corto en arista de origen a destino,
+        //padre va guardar el nodo anterior de los hijos 
+        vector <int> padre (n, -1);
+        vector <int> cola;
+        padre[origen] = origen;
+        cola.push_back(origen);
+        for (int i = 0; i < cola.size(); i++){
+            int j = cola[i];
+            for (int k = 0; k < n; k++){
+                if (padre[k] == -1 && residual[j][k] > 0){
+                    padre[k] = j;
+                    cola.push_back(k);
+                }
+            }
+        }
+
+        //si no llegamos al destino ya no hay mas caminos por ahi
+        if (padre[destino] == -1){
+            break;
+        }
+
+        //capacidad residual del camino, la minima para el cuello de botella
+        int cf = INT_MAX;
+        for (int k = destino; k != origen; k = padre[k]){
+            cf = min(cf, residual[padre[k]][k]);
+
+        }
+
+        for (int v = destino; v != origen; v = padre[v]) {
+            int u = padre[v];
+            residual[u][v] -= cf;
+            residual[v][u] += cf;
+        }
+
+        flujoTotal += cf;
+    }
+
+    // Imprimir el flujo maximo encontrado
+    cout << "Punto 3: Flujo maximo de informacion\n" << endl;
+    cout << "Flujo maximo de " << nodoALetra(origen) << " a " << nodoALetra(destino)
+         << ": " << flujoTotal << endl;
+}
+
+
+// ===== Fin Sección Punto 3 =======
+
+
 int main(int argc, char* argv[]) {
     // Archivo de entrada: se puede pasar como argumento, si no se usa el de ejemplo
     string nombreArchivo = (argc > 1) ? argv[1] : "Entradas/E5_Entrada_2.txt";
@@ -155,9 +216,6 @@ int main(int argc, char* argv[]) {
     resolverTSP(distanciasDebug);
 
     // Punto 3
-
-
-    //Punto 4
-
+    resolverFlujoMaximo(capacidades);
     return 0;
 }
