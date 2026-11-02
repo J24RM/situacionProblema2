@@ -213,7 +213,7 @@ int main(int argc, char* argv[]) {
     };
 
     //Punto 2
-    resolverTSP(distanciasDebug);
+    resolverTSP(distancias);
 
     // Punto 3
     resolverFlujoMaximo(capacidades);
